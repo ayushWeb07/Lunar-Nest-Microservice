@@ -13,6 +13,8 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: pnpm run start:dev reservations
+    env_file:
+      - ./apps/reservations/.env
 
   auth:
     build:
@@ -28,6 +30,8 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: pnpm run start:dev auth
+    env_file:
+      - ./apps/auth/.env
 
   mongo:
     image: mongo:latest

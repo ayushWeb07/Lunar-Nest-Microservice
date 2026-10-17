@@ -7,9 +7,17 @@ import {
   ReservationDocument,
   ReservationSchema,
 } from './schemas/reservation.schema';
+import { ConfigModule } from '@nestjs/config';
+import { z } from 'zod';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: z.object({
+        MONGO_URI: z.string().nonempty(),
+      }),
+    }),
     DatabaseModule,
     DatabaseModule.forFeature([
       { name: ReservationDocument.name, schema: ReservationSchema },
