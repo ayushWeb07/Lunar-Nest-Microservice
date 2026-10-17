@@ -14,6 +14,21 @@ services:
       - /usr/src/app/node_modules
     command: pnpm run start:dev reservations
 
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+
+    container_name: lunar_auth
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: pnpm run start:dev auth
+
   mongo:
     image: mongo:latest
     container_name: lunar_mongo
