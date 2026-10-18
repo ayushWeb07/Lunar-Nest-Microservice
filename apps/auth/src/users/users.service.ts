@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { UserDocument } from './schemas/user.schema';
@@ -7,9 +12,23 @@ import { FindByIdDto } from './dtos/find-by-id.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private logger: Logger,
+    private readonly usersRepository: UsersRepository,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+    // check if such user already exists
+    try {
+      await this.usersRepository.findOne({
+        email: createUserDto.email,
+      });
+
+      throw new ConflictException('User with such email already exists');
+    } catch {
+      this.logger.log('User with such email already exists');
+    }
+
     // hash the password
     createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     return this.usersRepository.create(createUserDto);
