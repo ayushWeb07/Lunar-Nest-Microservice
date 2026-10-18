@@ -1,30 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersRepository } from './users.repository';
 import { UserDocument } from './schemas/user.schema';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  create(createUserDto: CreateUserDto): Promise<UserDocument> {
+  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+    // hash the password
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     return this.usersRepository.create(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  async validateUser(email: string, password: string): Promise<UserDocument> {
+    // fetch the user
+    let user: UserDocument;
+    try {
+      user = await this.usersRepository.findOne({
+        email,
+      });
+    } catch (err) {
+      throw new UnauthorizedException(err);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    // validate the passwords
+    const isPasswordCorrect: boolean = await bcrypt.compare(
+      password,
+      user!.password,
+    );
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+    if (!isPasswordCorrect) {
+      throw new UnauthorizedException('Credentials are not valid');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return user;
   }
 }

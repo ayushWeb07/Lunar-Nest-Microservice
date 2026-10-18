@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { z } from 'zod';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { z } from 'zod';
       }),
     }),
     UsersModule,
+    PassportModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -29,6 +32,6 @@ import { z } from 'zod';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, LocalStrategy],
 })
 export class AuthModule {}
