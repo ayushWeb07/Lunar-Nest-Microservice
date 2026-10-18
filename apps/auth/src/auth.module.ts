@@ -11,6 +11,7 @@ import { z } from 'zod';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: z.object({
+        PORT: z.coerce.number().positive(),
         MONGO_URI: z.string().nonempty(),
         JWT_SECRET: z.string().nonempty(),
         JWT_EXPIRATION: z.coerce.number().positive(),
