@@ -3,6 +3,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
+import { FindByIdDto } from './dtos/find-by-id.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,5 +37,11 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async findById(findByIdDto: FindByIdDto): Promise<UserDocument> {
+    return this.usersRepository.findOne({
+      _id: findByIdDto.id,
+    });
   }
 }
