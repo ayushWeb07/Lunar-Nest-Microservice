@@ -2,7 +2,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Request } from 'express';
 import { ITokenPayload } from '../interfaces/token-payload.interface';
 import { UsersService } from '../users/users.service';
 import { UserDocument } from '../users/schemas/user.schema';
@@ -15,11 +14,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          let token: string | null = null;
+        (request: any) => {
+          const token: string | null = request?.cookies?.['authentication'];
 
-          if (request && request.cookies) {
-            token = request.cookies['authentication'];
+          // fetch from direct request in case of coming from other microservice
+          if (!token) {
+            token = request?.authentication;
           }
 
           return token;
@@ -38,7 +38,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         id: payload.userId,
       });
     } catch {
-      throw new UnauthorizedException('Invalid or expired token has been provided');
+      throw new UnauthorizedException(
+        'Invalid or expired token has been provided',
+      );
     }
 
     return user;

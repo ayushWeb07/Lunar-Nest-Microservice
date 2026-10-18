@@ -3,9 +3,14 @@ import { AuthModule } from './auth.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+  });
 
   // use api prefix
   app.setGlobalPrefix('api/v1');
@@ -27,6 +32,7 @@ async function bootstrap() {
   // 2. Access your environment variables with optional type-safety
   const port = configService.getOrThrow<number>('PORT');
 
+  await app.startAllMicroservices();
   await app.listen(port);
 }
 bootstrap();
