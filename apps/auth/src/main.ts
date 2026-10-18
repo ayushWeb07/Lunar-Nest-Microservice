@@ -8,8 +8,15 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
 
+  // retrieve the ConfigService instance from the application context
+  const configService = app.get(ConfigService);
+
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
+    options: {
+      host: configService.getOrThrow<string>('HOST'),
+      port: configService.getOrThrow<number>('TCP_PORT'),
+    },
   });
 
   // use api prefix
@@ -26,11 +33,8 @@ async function bootstrap() {
   // setup other middlewares
   app.use(cookieParser());
 
-  // 1. Retrieve the ConfigService instance from the application context
-  const configService = app.get(ConfigService);
-
-  // 2. Access your environment variables with optional type-safety
-  const port = configService.getOrThrow<number>('PORT');
+  // access your environment variables with optional type-safety
+  const port = configService.getOrThrow<number>('HTTP_PORT');
 
   await app.startAllMicroservices();
   await app.listen(port);

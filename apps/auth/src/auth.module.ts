@@ -14,7 +14,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: z.object({
-        PORT: z.coerce.number().positive(),
+        HTTP_PORT: z.coerce.number().positive(),
+        TCP_PORT: z.coerce.number().positive(),
+        HOST: z.string().nonempty(),
         MONGO_URI: z.string().nonempty(),
         JWT_SECRET: z.string().nonempty(),
         JWT_EXPIRATION: z.coerce.number().positive(),

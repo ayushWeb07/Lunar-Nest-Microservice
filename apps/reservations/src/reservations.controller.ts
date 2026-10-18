@@ -6,17 +6,20 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dtos/create-reservation.dto';
 import { UpdateReservationDto } from './dtos/update-reservation.dto';
 import { ReservationDocument } from './schemas/reservation.schema';
 import { FindOneReservationDto } from './dtos/find-one-reservation.dto';
+import { JwtAuthGuard } from '@app/shared';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(
     @Body() createReservationDto: CreateReservationDto,
