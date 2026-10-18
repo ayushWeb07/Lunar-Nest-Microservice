@@ -19,14 +19,15 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     // check if such user already exists
-    try {
-      await this.usersRepository.findOne({
+    const userExists: boolean = await this.usersRepository
+      .findOne({
         email: createUserDto.email,
-      });
+      })
+      .then(() => true)
+      .catch(() => false);
 
+    if (userExists) {
       throw new ConflictException('User with such email already exists');
-    } catch {
-      this.logger.log('User with such email already exists');
     }
 
     // hash the password
