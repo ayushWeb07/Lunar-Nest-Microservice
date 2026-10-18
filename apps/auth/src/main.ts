@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
@@ -16,6 +17,9 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  // setup other middlewares
+  app.use(cookieParser());
 
   // 1. Retrieve the ConfigService instance from the application context
   const configService = app.get(ConfigService);
