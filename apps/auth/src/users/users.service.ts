@@ -21,8 +21,8 @@ export class UsersService {
       user = await this.usersRepository.findOne({
         email,
       });
-    } catch (err) {
-      throw new UnauthorizedException(err);
+    } catch {
+      throw new UnauthorizedException('Credentials are not valid');
     }
 
     // validate the passwords
