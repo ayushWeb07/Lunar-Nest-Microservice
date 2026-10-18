@@ -7,7 +7,7 @@ import {
   ReservationDocument,
   ReservationSchema,
 } from './schemas/reservation.schema';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { z } from 'zod';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
@@ -18,16 +18,25 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       validationSchema: z.object({
         PORT: z.coerce.number().positive(),
         MONGO_URI: z.string().nonempty(),
+        AUTH_HOST: z.string().nonempty(),
+        AUTH_PORT: z.coerce.number().positive(),
       }),
     }),
     DatabaseModule,
     DatabaseModule.forFeature([
       { name: ReservationDocument.name, schema: ReservationSchema },
     ]),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: AUTH_SERVICE_PROVIDER,
-        transport: Transport.TCP,
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.getOrThrow<string>('AUTH_HOST'),
+            port: configService.getOrThrow<number>('AUTH_PORT'),
+          },
+        }),
       },
     ]),
   ],
