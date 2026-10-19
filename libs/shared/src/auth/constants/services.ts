@@ -1,0 +1,1 @@
+export const AUTH_SERVICE_PROVIDER = 'AUTH_SERVICE';
