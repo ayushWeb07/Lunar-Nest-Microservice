@@ -9,6 +9,7 @@ import { catchError, map, Observable, tap } from 'rxjs';
 import type { Request } from 'express';
 import { AUTH_SERVICE_PROVIDER } from '@app/shared/auth/constants/services';
 import { ClientProxy } from '@nestjs/microservices';
+import { IUserDto } from '@app/shared/dtos';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -27,11 +28,11 @@ export class JwtAuthGuard implements CanActivate {
 
     // validate the cookie from the auth service
     return this.authClient
-      .send('validateToken', {
+      .send<IUserDto>('validateToken', {
         authentication: token,
       })
       .pipe(
-        tap((user): void => {
+        tap((user: IUserDto): void => {
           request.user = user;
         }),
         map((): boolean => true),

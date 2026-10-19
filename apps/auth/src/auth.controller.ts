@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
+import { CurrentUser } from '@app/shared';
 import { UserDocument } from './users/schemas/user.schema';
 import type { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';

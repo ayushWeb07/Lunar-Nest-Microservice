@@ -1,10 +1,10 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserDocument } from '../users/schemas/user.schema';
 import type { Request } from 'express';
+import { IUserDto } from '@app/shared/dtos';
 
 export const CurrentUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext): UserDocument => {
+  (data: unknown, context: ExecutionContext): IUserDto => {
     const req: Request = context.switchToHttp().getRequest();
-    return req.user as UserDocument;
+    return req.user as IUserDto;
   },
 );
